@@ -1,0 +1,139 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.8.9.13224",
+      "templateHash": "17463155096588889715"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string"
+    },
+    "loc": {
+      "type": "string",
+      "defaultValue": "krc"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Consumption"
+    },
+    "sc": {
+      "type": "int",
+      "defaultValue": 0
+    },
+    "publisherEmail": {
+      "type": "string"
+    },
+    "publisherName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "rg": "[format('rg-{0}-{1}', parameters('name'), parameters('loc'))]",
+    "fncappname": "[format('fncapp-{0}-{1}', uniqueString(parameters('name')), parameters('loc'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ApiManagement/service",
+      "apiVersion": "2021-12-01-preview",
+      "name": "[format('apim-{0}-{1}', parameters('name'), parameters('loc'))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "capacity": "[parameters('sc')]",
+        "name": "[parameters('sku')]"
+      },
+      "properties": {
+        "publisherEmail": "[parameters('publisherEmail')]",
+        "publisherName": "[parameters('publisherName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('fncappname')]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', format('cs-{0}-{1}', parameters('name'), parameters('loc')))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[resourceId('Microsoft.Storage/storageAccounts', format('st{0}{1}', uniqueString(parameters('name')), parameters('loc')))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', format('cs-{0}-{1}', parameters('name'), parameters('loc')))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', format('st{0}{1}', uniqueString(parameters('name')), parameters('loc')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "[format('st{0}{1}', uniqueString(parameters('name')), parameters('loc'))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2"
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2022-03-01",
+      "name": "[format('cs-{0}-{1}', parameters('name'), parameters('loc'))]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "sku": {
+        "name": "Y1",
+        "tier": "Dynamic",
+        "size": "Y1",
+        "family": "Y",
+        "capacity": 0
+      },
+      "properties": {
+        "reserved": false
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[format('cs-{0}-{1}', parameters('name'), parameters('loc'))]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', format('wrkspc-{0}-{1}', parameters('name'), parameters('loc')))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', format('wrkspc-{0}-{1}', parameters('name'), parameters('loc')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2021-12-01-preview",
+      "name": "[format('wrkspc-{0}-{1}', parameters('name'), parameters('loc'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "retentionInDays": 30,
+        "sku": {
+          "name": "PerGB2018"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "rn": {
+      "type": "string",
+      "value": "[variables('rg')]"
+    }
+  }
+}
