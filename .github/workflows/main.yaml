@@ -1,7 +1,5 @@
 name: 'My First GitHub Actions'
 on: push
-env:
-  PRESET_VALUE: "This is the preset value"
 
 jobs:
   first-job:
@@ -9,19 +7,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set environment variable 1
+    - name: Set output value
+      id: first
       shell: bash
       run: |
-        echo "STEPSET_VALUE_1='This is the value 1 set in the step'" >> $GITHUB_ENV
+        first_value="This is the value for the first output"
 
-    - name: Set environment variable 2
-      shell: pwsh
-      run: |
-        echo "STEPSET_VALUE_2='This is the value 2 set in the step'" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf-8 -Append
+        echo "::set-output name=first_value::$first_value"
 
-    - name: Check environment variables
+    - name: Check output value
       shell: bash
       run: |
-        echo "preset value: ${{ env.PRESET_VALUE }}"
-        echo "stepset value 1: ${{ env.STEPSET_VALUE_1 }}"
-        echo "stepset value 2: ${{ env.STEPSET_VALUE_2 }}"
+        echo "first value: ${{ steps.first.outputs.first_value }}"
