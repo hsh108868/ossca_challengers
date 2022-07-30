@@ -8,11 +8,12 @@ jobs:
     strategy:
       matrix:
         os: [ 'windows-latest', 'macos-latest', 'ubuntu-latest' ]
+        message: [ 'Hello World', 'Lorem Ipsum' ]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Say Hello World on ${{ matrix.os }}
+    - name: Greetings from ${{ matrix.os }}
       shell: bash
       run: |
-        echo "Hello World on ${{ matrix.os }}"
+        echo "${{ matrix.message }} from ${{ matrix.os }}"
