@@ -1,13 +1,11 @@
-name: 'My First GitHub Actions'
+name: 'Manual Release'
 on:
-  push:
-    branches:
-    - master
-    tags:
-    - 'v*'
-  pull_request:
-    branches:
-    - master
+  workflow_dispatch:
+    inputs:
+      title:
+        type: string
+        required: true
+        description: Enter the release title
 
 jobs:
   call_build:
@@ -19,6 +17,6 @@ jobs:
     uses: ./.github/worlfows/cd.yaml
     needs: call_build
     with:
-      title: latest
+      title: ${{ github.event.inputs.title }}
       artifact_name: apiapp
     secrets: inherit
