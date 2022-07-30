@@ -1,13 +1,11 @@
-name: 'My First GitHub Actions'
+name: 'Manual Release'
 on:
-  push:
-    branches:
-    - master
-    tags:
-    - 'v*'
-  pull_request:
-    branches:
-    - master
+  workflow_dispatch:
+    inputs:
+      title:
+        type: string
+        required: true
+        description: Enter the release title
 
 jobs:
   build:
@@ -47,6 +45,7 @@ jobs:
   release:
     name: Release Apps
     needs: build
+
     runs-on: ubuntu-latest
 
     steps:
@@ -69,7 +68,8 @@ jobs:
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
         prerelease: false
+        automatic_release_tag: "latest"
+        title: ${{ github.event.inputs.title }}
         files: |
           artifacts/apiapp.zip
