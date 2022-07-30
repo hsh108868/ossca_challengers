@@ -1,24 +1,27 @@
 name: 'My First GitHub Actions'
-on: push
+on:
+  push:
+    branches:
+    - main
 
 jobs:
   first-job:
     name: 'First Job'
-
-    strategy:
-      matrix:
-        os: [ 'windows-latest', 'macos-latest', 'ubuntu-latest' ]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Say Hello World from ${{ matrix.os }} 1
+    - name: Say Hello World from first job
       shell: bash
       run: |
-        echo "Hello World on ${{ matrix.os }} 1"
+        echo "Hello World from first job"
 
-    - name: Say Hello World from ${{ matrix.os }} 2
-      if: matrix.os == 'ubuntu-latest'
+  second-job:
+    name: 'Second Job'
+    needs: first-job
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Say Hello World from second job
       shell: bash
       run: |
-        echo "Hello World on ${{ matrix.os }} 2"
+        echo "Hello World from second job"
