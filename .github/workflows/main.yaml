@@ -16,7 +16,7 @@ jobs:
       artifact_name: apiapp
 
   call_release_dev:
-    uses: ./.github/worlfows/cd.yaml
+    uses: ./.github/workflows/cd.yaml
     needs: call_build
     with:
       title: latest
@@ -25,7 +25,7 @@ jobs:
     secrets: inherit
 
   call_release_prod:
-    uses: ./.github/worlfows/cd.yaml
+    uses: ./.github/workflows/cd.yaml
     needs: call_release_dev
     with:
       title: latest
