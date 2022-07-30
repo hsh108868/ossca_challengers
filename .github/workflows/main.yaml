@@ -2,7 +2,7 @@ name: 'My First GitHub Actions'
 on:
   push:
     branches:
-    - main
+    - master
 
 jobs:
   first-job:
@@ -19,7 +19,6 @@ jobs:
     name: 'Second Job'
     needs: first-job
     runs-on: ubuntu-latest
-
     steps:
     - name: Say Hello World from second job
       shell: bash
