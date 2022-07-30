@@ -20,6 +20,5 @@ jobs:
     needs: call_build
     with:
       title: latest
-      automatic_release_tag: "latest"
       artifact_name: apiapp
     secrets: inherit
