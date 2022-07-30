@@ -14,7 +14,6 @@ jobs:
     uses: ./.github/workflows/ci.yaml
     with:
       artifact_name: apiapp
-      automatic_release_tag: "latest"
 
   call_release:
     uses: ./.github/workflows/cd.yaml
