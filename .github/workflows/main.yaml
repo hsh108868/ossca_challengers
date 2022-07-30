@@ -5,7 +5,7 @@ jobs:
   first-job:
     name: 'First Job'
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Show secret
       shell: bash
